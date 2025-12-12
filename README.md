@@ -108,7 +108,14 @@ Or start with individual phases:
 │   │   └── documentation-generator.md
 │   │
 │   ├── skills/                  # Reusable capabilities
-│   │   ├── code-reviewer.md
+│   │   ├── code-reviewer/
+│   │   │   ├── code-reviewer.md
+│   │   │   ├── scripts/         # Analysis scripts
+│   │   │   │   ├── analyze-metrics.py
+│   │   │   │   └── compare-complexity.py
+│   │   │   └── templates/       # Review templates
+│   │   │       ├── finding-template.md
+│   │   │       └── review-checklist.md
 │   │   └── documentation-generator.md
 │   │
 │   └── commands/                # Slash commands
