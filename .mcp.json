@@ -1,15 +1,9 @@
 {
   "mcpServers": {
-    "spec-workflow": {
-      "type": "stdio",
-      "command": "npx",
-      "args": ["-y", "@pimzino/spec-workflow-mcp@latest"],
-      "env": {}
-    },
     "context7": {
       "type": "stdio",
       "command": "npx",
-      "args": ["-y", "@upstash/context7-mcp"]
+      "args": ["-y", "@upstash/context7-mcp", "--api-key", "${CONTEXT7_API_KEY}"]
     },
     "docs-mcp-server": {
       "type": "stdio",
@@ -25,23 +19,27 @@
       "command": "uvx",
       "args": ["awslabs.aws-documentation-mcp-server@latest"],
       "env": {
-        "FASTMCP_LOG_LEVEL": "ERROR"
-      }
+        "FASTMCP_LOG_LEVEL": "ERROR",
+        "AWS_DOCUMENTATION_PARTITION": "aws",
+        "MCP_USER_AGENT": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
+      },
+      "disabled": false,
+      "autoApprove": []
     },
     "aws-knowledge-mcp-server": {
       "type": "stdio",
       "command": "uvx",
       "args": ["fastmcp", "run", "https://knowledge-mcp.global.api.aws"]
     },
-    "awslabs.terraform-mcp-server": {
-      "transport": "sse",
-      "endpoint": "https://mcp.opentofu.org/sse"
+    "opentofu": {
+      "command": "npx",
+      "args": ["-y", "@opentofu/opentofu-mcp-server"]
     },
     "github": {
       "type": "http",
       "url": "https://api.githubcopilot.com/mcp",
       "headers": {
-        "Authorization": "Bearer ${GITHUB_TOKEN}"
+        "Authorization": "Bearer ${GITHUB_MCP_TOKEN}"
       }
     },
     "godoc": {
@@ -53,7 +51,9 @@
       "args": ["awslabs.dynamodb-mcp-server@latest"],
       "env": {
         "FASTMCP_LOG_LEVEL": "ERROR"
-      }
+      },
+      "disabled": false,
+      "autoApprove": []
     },
     "awslabs.syntheticdata-mcp-server": {
       "command": "uvx",
@@ -61,8 +61,10 @@
       "env": {
         "FASTMCP_LOG_LEVEL": "ERROR",
         "AWS_PROFILE": "${AWS_PROFILE}",
-        "AWS_REGION": "${AWS_REGION}"
-      }
+        "AWS_REGION": "us-east-1"
+      },
+      "autoApprove": [],
+      "disabled": false
     },
     "google_workspace": {
       "type": "stdio",
@@ -70,15 +72,25 @@
       "args": ["workspace-mcp"],
       "env": {
         "GOOGLE_OAUTH_CLIENT_ID": "${GOOGLE_OAUTH_CLIENT_ID}",
-        "GOOGLE_OAUTH_CLIENT_SECRET": "${GOOGLE_OAUTH_CLIENT_SECRET}"
+        "GOOGLE_OAUTH_CLIENT_SECRET": "${GOOGLE_OAUTH_CLIENT_SECRET}",
+        "OAUTHLIB_INSECURE_TRANSPORT": "1"
       }
+    },
+    "spec-workflow": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@pimzino/spec-workflow-mcp@latest", "/Users/gvasels/oopo/oopo-dev-platform"]
     },
     "awslabs.aws-api-mcp-server": {
       "command": "uvx",
-      "args": ["awslabs.aws-api-mcp-server@latest"],
+      "args": [
+        "awslabs.aws-api-mcp-server@latest"
+      ],
       "env": {
-        "AWS_REGION": "${AWS_REGION}"
-      }
+        "AWS_REGION": "us-east-1"
+      },
+      "disabled": false,
+      "autoApprove": []
     },
     "awslabs.finch-mcp-server": {
       "command": "uvx",
@@ -87,7 +99,10 @@
         "AWS_PROFILE": "${AWS_PROFILE}",
         "AWS_REGION": "${AWS_REGION}",
         "FASTMCP_LOG_LEVEL": "INFO"
-      }
+      },
+      "transportType": "stdio",
+      "disabled": false,
+      "autoApprove": []
     },
     "well-architected-security-mcp-server": {
       "command": "uvx",

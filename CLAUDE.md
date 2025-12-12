@@ -156,6 +156,12 @@ Follow [Keep a Changelog](https://keepachangelog.com/) format:
 4. **Dependencies** - Internal and external dependencies
 5. **Usage Examples** - Common usage patterns
 
+**Exception:** The `.claude/` directory and its subdirectories should NOT contain CLAUDE.md files. Documentation for Claude Code capabilities is maintained in dedicated files at the project root:
+- `AGENTS.md` - Specialized subagents documentation
+- `COMMANDS.md` - Slash commands documentation
+- `PLUGINS.md` - SDLC workflow plugins documentation
+- `SKILLS.md` - Reusable capabilities documentation
+
 #### When to Update CLAUDE.md
 
 - After adding new files or functions

@@ -1,8 +1,10 @@
-# .claude/plugins/ - SDLC Workflow Plugins
+# SDLC Workflow Plugins
 
 ## Overview
 
 This directory contains SDLC (Software Development Lifecycle) plugins that orchestrate the development workflow from specification to deployment. Each plugin represents a phase in the development process and can be invoked independently or as part of the full `/sdlc` workflow.
+
+**Location:** `.claude/plugins/`
 
 ## Plugin Architecture
 
@@ -24,7 +26,7 @@ Main Agent (Claude Code)
 └─────────────┘                    └─────────────┘
 ```
 
-## Files
+## Plugins
 
 | File | Phase | Description |
 |------|-------|-------------|
@@ -99,7 +101,7 @@ Each plugin can be invoked independently:
 | Spec | Design approved via spec-workflow |
 | Test | Tests written and failing (Red) |
 | Code | All tests passing (Green) |
-| Build | Lint ✓, Types ✓, Coverage 80%+ |
+| Build | Lint, Types, Coverage 80%+ |
 | Security | 0 critical/high vulnerabilities |
 | Docs | OpenAPI valid, CLAUDE.md updated |
 
@@ -118,9 +120,9 @@ Each plugin documents how to handle failures:
 
 To add a new SDLC plugin:
 
-1. Create `{plugin-name}.md` in this directory
+1. Create `{plugin-name}.md` in `.claude/plugins/`
 2. Include frontmatter with phase number and dependencies
 3. Document workflow steps
 4. Specify agents/skills to leverage
 5. Define inputs/outputs
-6. Update this CLAUDE.md
+6. Update this PLUGINS.md
