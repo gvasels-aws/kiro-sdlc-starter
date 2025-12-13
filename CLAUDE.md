@@ -54,12 +54,12 @@
 
 ## Development Workflow
 
-### SDLC Workflow (6-Phase)
+### SDLC Workflow (7-Phase)
 
 This project follows a structured Software Development Lifecycle using Claude Code automation:
 
 ```
-/sdlc → SPEC → TEST → CODE → BUILD → SECURITY → DOCS → Deploy
+/sdlc → SPEC → TEST → CODE → BUILD → SECURITY → DOCS → Deploy → VERIFY
 ```
 
 | Phase | Plugin | Description | Artifacts |
@@ -70,6 +70,7 @@ This project follows a structured Software Development Lifecycle using Claude Co
 | 4. **Build** | `builder` | Lint, type check, test coverage, build artifacts | Build output |
 | 5. **Security** | `security-checker` | Dependency scan, secrets detection, SAST | Security report |
 | 6. **Docs** | `docs-generator` | API docs, code docs, CLAUDE.md, CHANGELOG | Documentation |
+| 7. **Verify** | `deploy-verifier` | Post-deployment API tests, smoke tests, rollback on failure | Verification report |
 
 ### Starting a New Feature
 
@@ -85,7 +86,7 @@ This project follows a structured Software Development Lifecycle using Claude Co
 
 | Context | Workflow | Description |
 |---------|----------|-------------|
-| **Chat session** | `/sdlc` command | Implement directly in the conversation - spec, test, code, build, security, docs phases executed inline |
+| **Chat session** | `/sdlc` command | Implement directly in the conversation - spec, test, code, build, security, docs, verify phases executed inline |
 | **GitHub automation** | GitHub Issues | Create issues for each task, tag `@claude` for async implementation |
 | **Team collaboration** | GitHub Issues | Track progress, assign work, enable PR reviews |
 
@@ -278,3 +279,4 @@ Follow [Keep a Changelog](https://keepachangelog.com/) format:
 | Build | Lint ✓, Types ✓, Coverage 80%+ |
 | Security | 0 critical/high vulnerabilities |
 | Docs | OpenAPI valid, CLAUDE.md updated |
+| Verify | API smoke tests pass, rollback on failure |
