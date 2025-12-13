@@ -6,7 +6,7 @@ A ready-to-use project template with a complete SDLC (Software Development Lifec
 
 This starter project provides:
 
-- **6-Phase SDLC Workflow** - Structured development from spec to deployment
+- **7-Phase SDLC Workflow** - Structured development from spec to verified deployment
 - **SDLC Plugins** - Orchestrate each development phase
 - **Specialized Agents** - Subagents for implementation, testing, security, and docs
 - **Reusable Skills** - Code review and documentation generation capabilities
@@ -68,7 +68,30 @@ export GOOGLE_OAUTH_CLIENT_SECRET="your-client-secret"
 
 **Security Note**: `.envrc` is gitignored - never commit secrets to version control.
 
-### 4. Start Building
+### 4. Set Up GitHub @claude Integration (Optional)
+
+To enable `@claude` triggers in GitHub issues and PRs:
+
+1. **Get a Claude Code OAuth Token**:
+   - Sign up for [Claude Code](https://claude.com/claude-code) if you haven't
+   - Generate an OAuth token from your account settings
+
+2. **Add the secret to your repository**:
+   - Go to your GitHub repository
+   - Navigate to **Settings** → **Secrets and variables** → **Actions**
+   - Click **New repository secret**
+   - Name: `CLAUDE_CODE_OAUTH_TOKEN`
+   - Value: Your Claude Code OAuth token
+
+3. **Test the integration**:
+   - Create a new issue with `@claude` in the title or body
+   - The GitHub Action will trigger and Claude will respond
+
+The workflows are pre-configured in `.github/workflows/`:
+- `claude.yml` - Triggers on `@claude` mentions in issues/comments
+- `claude-code-review.yml` - Automatic PR code reviews
+
+### 5. Start Building
 
 Run the SDLC workflow:
 
@@ -81,6 +104,7 @@ Or start with individual phases:
 - "Run the spec phase for [feature]"
 - "Write tests for this design"
 - "Implement this feature"
+- "Verify deployment"
 
 ## Project Structure
 
@@ -91,6 +115,11 @@ Or start with individual phases:
 ├── .mcp.json                    # MCP server configuration
 ├── .envrc.example               # Environment variable template
 ├── .gitignore                   # Git ignore patterns
+├── .github/
+│   └── workflows/
+│       ├── claude.yml           # @claude trigger workflow
+│       └── claude-code-review.yml # PR auto-review workflow
+│
 ├── .claude/
 │   ├── plugins/                 # SDLC workflow plugins
 │   │   ├── spec-writer.md       # Phase 1: Requirements & design
@@ -98,7 +127,8 @@ Or start with individual phases:
 │   │   ├── code-implementer.md  # Phase 3: Implementation
 │   │   ├── builder.md           # Phase 4: Build verification
 │   │   ├── security-checker.md  # Phase 5: Security audit
-│   │   └── docs-generator.md    # Phase 6: Documentation
+│   │   ├── docs-generator.md    # Phase 6: Documentation
+│   │   └── deploy-verifier.md   # Phase 7: Post-deploy verification
 │   │
 │   ├── agents/                  # Specialized subagents
 │   │   ├── implementation-agent.md
@@ -131,12 +161,12 @@ Or start with individual phases:
 
 ## SDLC Workflow
 
-The workflow follows 6 phases, executed sequentially or individually:
+The workflow follows 7 phases, executed sequentially or individually:
 
 ```
-┌─────────┐   ┌─────────┐   ┌─────────┐   ┌─────────┐   ┌─────────┐   ┌─────────┐
-│ 1.SPEC  │──►│ 2.TEST  │──►│ 3.CODE  │──►│ 4.BUILD │──►│5.SECURE │──►│ 6.DOCS  │
-└─────────┘   └─────────┘   └─────────┘   └─────────┘   └─────────┘   └─────────┘
+┌─────────┐   ┌─────────┐   ┌─────────┐   ┌─────────┐   ┌─────────┐   ┌─────────┐         ┌─────────┐
+│ 1.SPEC  │──►│ 2.TEST  │──►│ 3.CODE  │──►│ 4.BUILD │──►│5.SECURE │──►│ 6.DOCS  │──Deploy─►│7.VERIFY │
+└─────────┘   └─────────┘   └─────────┘   └─────────┘   └─────────┘   └─────────┘         └─────────┘
 ```
 
 ### Phase 1: Specification
@@ -181,6 +211,16 @@ The workflow follows 6 phases, executed sequentially or individually:
 - Add code documentation (TSDoc/GoDoc)
 - Create/update CLAUDE.md files
 - Update CHANGELOG
+
+### Phase 7: Post-Deployment Verification
+- Health check endpoints
+- Contract validation against OpenAPI spec
+- Smoke tests on critical API paths
+- Automatic rollback on failure
+
+**Gate**: All smoke tests pass, schemas match spec
+
+**On Failure**: Automatic rollback + incident notification
 
 ## Available Commands
 
