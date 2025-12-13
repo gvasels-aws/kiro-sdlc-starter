@@ -79,6 +79,94 @@ This project follows a structured Software Development Lifecycle using Claude Co
    - "Write tests for this design"
    - "Implement this feature"
 
+### Creating GitHub Issues from Task Groups
+
+**When to use which workflow:**
+
+| Context | Workflow | Description |
+|---------|----------|-------------|
+| **Chat session** | `/sdlc` command | Implement directly in the conversation - spec, test, code, build, security, docs phases executed inline |
+| **GitHub automation** | GitHub Issues | Create issues for each task, tag `@claude` for async implementation |
+| **Team collaboration** | GitHub Issues | Track progress, assign work, enable PR reviews |
+
+**Use `/sdlc` in chat when:**
+- Working interactively with Claude Code locally
+- Implementing a single feature end-to-end
+- Rapid prototyping or exploration
+
+**Use GitHub Issues when:**
+- Requested to "implement group N in GitHub" or "create issues for group N"
+- Working with team members who need visibility
+- Tasks need to be tracked, assigned, or scheduled
+- Running via GitHub Actions / @claude automation
+
+---
+
+When asked to "implement group N" or "create issues for group N" from a spec's `tasks.md`:
+
+**Workflow:**
+1. Read `.spec-workflow/specs/{spec-name}/tasks.md` to find the group
+2. Read `.spec-workflow/specs/{spec-name}/design.md` for technical context
+3. Create labels if they don't exist (use `gh label create`)
+4. Create one GitHub issue per task using `gh issue create`
+5. Update `tasks.md` to mark tasks as having issues created (optional)
+
+**Issue Template:**
+```markdown
+## Overview
+[Brief description from task]
+
+**Epic**: [Epic name]
+**Group**: [Group number] - [Group name]
+**Task**: [Task number]
+**Dependencies**: [List dependencies]
+
+## Files to Create
+- [List files from task]
+
+## Requirements
+[Details from design.md - schemas, API contracts, etc.]
+
+## Acceptance Criteria
+- [ ] [Checkboxes for verification]
+
+## Related Specs
+- Design: `.spec-workflow/specs/{spec}/design.md`
+- Tasks: `.spec-workflow/specs/{spec}/tasks.md`
+
+---
+@claude implement this task following TDD - write tests first, then implement
+```
+
+**Label Conventions:**
+| Label | Description | Color |
+|-------|-------------|-------|
+| `infrastructure` | Infrastructure and IaC | `#0e8a16` |
+| `backend` | Backend services | `#c5def5` |
+| `frontend` | Frontend components | `#d4c5f9` |
+| `api` | API related | `#c5def5` |
+| `epic-{name}` | Epic identifier | `#5319e7` |
+| `group-N` | Task group number | `#fbca04` |
+
+**Example Command:**
+```bash
+# Create labels first
+gh label create "infrastructure" --description "Infrastructure and IaC" --color "0e8a16"
+gh label create "group-1" --description "Task group 1" --color "fbca04"
+
+# Create an issue
+gh issue create \
+  --title "[Epic-Task] Brief description" \
+  --label "infrastructure,epic-name,group-1" \
+  --body "$(cat <<'EOF'
+## Overview
+...issue body...
+EOF
+)"
+```
+
+**Note:** Use the `gh` CLI tool for private repositories where MCP GitHub tools may lack access.
+
 ### Component Hierarchy
 
 | Component | Location | Invocation | Purpose |
