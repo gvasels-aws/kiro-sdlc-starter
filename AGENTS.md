@@ -1,8 +1,7 @@
 ---
 name: agents-overview
-description: Code quality and maintainability analysis
+description: overview of agents
 tools: read, grep, diff
-skills: code-reviewer
 ---
 
 # .claude/agents/ - Specialized Subagents
