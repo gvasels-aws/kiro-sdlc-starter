@@ -62,6 +62,8 @@ jobs:
         uses: anthropics/claude-code-action@v1
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          max_turns: 50
+          timeout_minutes: 30
           additional_permissions: |
             actions: read
 
