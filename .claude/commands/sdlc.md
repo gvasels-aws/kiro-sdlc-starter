@@ -1,34 +1,53 @@
 ---
 name: sdlc
-description: Full SDLC workflow orchestrator - spec, test, code, build, security, docs, verify
+description: Full SDLC workflow orchestrator - spec, test, code, build, docs → PR → review, security, verify
 ---
 
 # SDLC Orchestrator
 
 You are orchestrating a complete Software Development Lifecycle workflow. Guide the user through each phase systematically, leveraging plugins, skills, and subagents.
 
-## SDLC Phases
+## SDLC Phases (Optimized for Speed & Token Efficiency)
 
 ```
-┌──────────────────────────────────────────────────────────────────────────────────┐
-│                              SDLC WORKFLOW                                        │
-├─────────┬─────────┬─────────┬─────────┬─────────┬───────────┬────────────────────┤
-│ 1.SPEC  │ 2.TEST  │ 3.CODE  │ 4.BUILD │5.SECURE │  6.DOCS   │     7.VERIFY       │
-│ ────────│─────────│─────────│─────────│─────────│───────────│────────────────────│
-│ Plugin: │ Plugin: │ Plugin: │ Plugin: │ Plugin: │ Plugin:   │ Plugin:            │
-│ spec-   │ test-   │ code-   │ builder │security-│ docs-     │ deploy-            │
-│ writer  │ writer  │ implmtr │         │ checker │ generator │ verifier           │
-│         │         │         │         │         │           │                    │
-│ MCP:    │ Agent:  │ Agent:  │ Tools:  │ Agent:  │ Agent:    │ Tools:             │
-│ spec-   │ test-   │ implmnt-│ bash    │security-│ documntn- │ curl, scripts      │
-│ workflow│ engineer│ agent   │ linters │ auditor │ generator │ + rollback         │
-└─────────┴─────────┴─────────┴─────────┴─────────┴───────────┴────────────────────┘
-                                                        │              │
-                                                     Deploy ──────► Verify
-                                                                   (or rollback)
+┌───────────────────────────────────────────────────────────────────────┐
+│                     DEVELOPMENT PHASES (during dev)                    │
+├─────────┬─────────┬─────────┬─────────┬───────────┬──────────────────┤
+│ 1.SPEC  │ 2.TEST  │ 3.CODE  │ 4.BUILD │  5.DOCS   │    CREATE PR     │
+│ ────────│─────────│─────────│─────────│───────────│──────────────────│
+│ Plugin: │ Plugin: │ Plugin: │ Plugin: │ Plugin:   │                  │
+│ spec-   │ test-   │ code-   │ builder │ docs-     │  gh pr create    │
+│ writer  │ writer  │ implmtr │         │ generator │                  │
+│         │         │         │         │           │                  │
+│ MCP:    │ Agent:  │ Agent:  │ Tools:  │ Agent:    │                  │
+│ spec-   │ test-   │ implmnt-│ bash    │ documntn- │                  │
+│ workflow│ engineer│ agent   │ linters │ generator │                  │
+└─────────┴─────────┴─────────┴─────────┴───────────┴──────────────────┘
+                                                             │
+                                                             ▼
+┌───────────────────────────────────────────────────────────────────────┐
+│                       PR-LEVEL PHASES (automated CI)                   │
+├─────────────────────┬─────────────────────┬───────────────────────────┤
+│    CODE REVIEW      │   SECURITY AUDIT    │      VERIFY (post-deploy) │
+│  ───────────────────│─────────────────────│───────────────────────────│
+│  claude-code-review │  gitleaks, checkov  │  Health check, smoke test │
+│  workflow (auto)    │  semgrep, govulnck  │  Rollback on failure      │
+│                     │                     │                           │
+│  Runs on: PR opened │  Runs on: PR CI     │  Runs on: deployment      │
+└─────────────────────┴─────────────────────┴───────────────────────────┘
 ```
 
-## Workflow Execution
+## Why This Structure?
+
+**Token Efficiency**: Security scans and code reviews run in parallel CI, not consuming interactive tokens.
+
+**Speed**: Developers focus on SPEC → TEST → CODE → BUILD → DOCS without waiting for security scans.
+
+**Quality Gates**: PR cannot merge without passing code review and security checks.
+
+---
+
+## Development Workflow Execution
 
 ### Phase 1: Specification (spec-writer plugin)
 
@@ -139,43 +158,9 @@ You are orchestrating a complete Software Development Lifecycle workflow. Guide 
 
 ---
 
-### Phase 5: Security Audit (security-checker plugin)
+### Phase 5: Documentation (docs-generator plugin)
 
-**Goal**: Catch security vulnerabilities before deployment.
-
-1. **Dependency Scan**
-   ```bash
-   npm audit --audit-level=high
-   govulncheck ./...
-   ```
-
-2. **Secrets Detection**
-   ```bash
-   gitleaks detect --source .
-   ```
-
-3. **SAST Scan**
-   ```bash
-   semgrep --config=auto .
-   ```
-
-4. **Infrastructure Scan** (if applicable)
-   ```bash
-   checkov -d infrastructure/
-   ```
-
-**Agent**: Spawn `security-auditor` subagent for deep analysis.
-
-**Quality Gates**:
-- 0 critical/high vulnerabilities
-- 0 hardcoded secrets
-- 0 SAST critical findings
-
----
-
-### Phase 6: Documentation (docs-generator plugin)
-
-**Goal**: Generate comprehensive documentation.
+**Goal**: Generate comprehensive documentation before PR.
 
 1. **API Documentation**
    - Generate/update OpenAPI spec
@@ -189,8 +174,9 @@ You are orchestrating a complete Software Development Lifecycle workflow. Guide 
    - Create directory documentation
    - Document new functions/exports
 
-4. **CHANGELOG Update**
-   - Add entry for the feature
+4. **CHANGELOG Update (REQUIRED)**
+   - Add entry for the feature in `CHANGELOG.md`
+   - Use Keep a Changelog format
 
 **Agent**: Spawn `documentation-generator` subagent.
 
@@ -198,11 +184,89 @@ You are orchestrating a complete Software Development Lifecycle workflow. Guide 
 
 ---
 
-### Phase 7: Post-Deployment Verification (deploy-verifier plugin)
+### Create Pull Request
 
-**Goal**: Verify API Gateway + Lambda deployments work correctly; rollback on failure.
+After completing phases 1-5:
 
-**Trigger**: After successful deployment to an environment (dev/staging/prod).
+```bash
+gh pr create --title "Feature: [description]" --body "$(cat <<'EOF'
+## Summary
+[Brief description of changes]
+
+## Changes
+- [Change 1]
+- [Change 2]
+
+## Testing
+- [x] Unit tests pass
+- [x] Integration tests pass
+- [x] Build verification passed
+
+## Documentation
+- [x] CLAUDE.md updated
+- [x] CHANGELOG.md updated
+
+🤖 Generated with [Claude Code](https://claude.com/claude-code)
+EOF
+)"
+```
+
+---
+
+## PR-Level Phases (Automated CI)
+
+These phases run automatically when a PR is created - no manual intervention needed.
+
+### Code Review (claude-code-review workflow)
+
+**Trigger**: PR opened or synchronized
+
+**What it does**:
+- Reviews code quality (SOLID principles, naming, error handling)
+- Checks documentation completeness
+- Verifies CLAUDE.md exists in new directories
+- Confirms CHANGELOG.md is updated
+
+**Location**: `.github/workflows/claude-code-review.yml`
+
+---
+
+### Security Audit (CI checks)
+
+**Trigger**: PR CI pipeline
+
+**Checks run**:
+1. **Secrets Detection**
+   ```bash
+   gitleaks detect --source .
+   ```
+
+2. **Dependency Vulnerabilities**
+   ```bash
+   npm audit --audit-level=high
+   govulncheck ./...
+   ```
+
+3. **Infrastructure Security** (if OpenTofu files changed)
+   ```bash
+   checkov -d infrastructure/ --framework terraform
+   ```
+
+4. **SAST Scan**
+   ```bash
+   semgrep --config=auto .
+   ```
+
+**Quality Gates**:
+- 0 critical/high vulnerabilities
+- 0 hardcoded secrets
+- 0 SAST critical findings
+
+---
+
+### Post-Deployment Verification (deploy-verifier plugin)
+
+**Trigger**: After successful deployment to an environment
 
 1. **Health Check**
    ```bash
@@ -210,32 +274,18 @@ You are orchestrating a complete Software Development Lifecycle workflow. Guide 
    ```
 
 2. **Contract Validation**
-   - Reuse TDD test expectations from Phase 2
    - Validate response schemas match OpenAPI spec
    - Test critical API paths
 
 3. **Smoke Tests**
    ```bash
    npm run verify:deployment
-   # or go run cmd/verify/main.go
    ```
 
 4. **Rollback on Failure**
-   - Automatic Lambda alias rollback to previous version
-   - Notify team via configured email
-   - Create incident issue in GitHub
-
-**Configuration**: `verify.config.json` in service root
-
-**Quality Gates**:
-- Health endpoint responds 200 within 60s
-- All smoke tests pass
-- Response schemas match OpenAPI spec
-
-**On Failure**:
-- Rollback to previous version
-- Pipeline marked as failed
-- Incident notification sent
+   - Automatic Lambda alias rollback
+   - Notify team
+   - Create incident issue
 
 ---
 
@@ -244,20 +294,38 @@ You are orchestrating a complete Software Development Lifecycle workflow. Guide 
 When user invokes `/sdlc`:
 
 1. **Ask which phase to start from** (or start fresh)
-2. **Execute phases sequentially**
-3. **Report status after each phase**
-4. **Handle failures with guidance to fix and retry**
+2. **Execute development phases (1-5) sequentially**
+3. **Create PR when development complete**
+4. **PR-level phases run automatically in CI**
 
 ## Phase Transitions
 
 ```
+Development Flow:
 spec-writer ──[approval]──> test-writer ──[tests written]──> code-implementer
                                                                     │
                                                                     ▼
-docs-generator <──[security passed]── security-checker <──[build passed]── builder
-      │
-      ▼
-   Deploy ──────> deploy-verifier ──[passed]──> ✅ Complete
+                      docs-generator <──[build passed]── builder
+                           │
+                           ▼
+                       CREATE PR
+                           │
+                           ▼
+              ┌────────────┴────────────┐
+              │    PR-Level (Auto CI)   │
+              ├─────────────────────────┤
+              │ • Code Review           │
+              │ • Security Audit        │
+              │ • Documentation Check   │
+              └────────────┬────────────┘
+                           │
+                      [PR Approved]
+                           │
+                           ▼
+                        DEPLOY
+                           │
+                           ▼
+                 deploy-verifier ──[passed]──> ✅ Complete
                         │
                    [failed]
                         │
@@ -272,9 +340,8 @@ Users can also invoke individual phases:
 - "Write tests for this design" → Load test-writer plugin
 - "Implement this feature" → Load code-implementer plugin
 - "Build and verify" → Load builder plugin
-- "Security scan" → Load security-checker plugin
 - "Generate docs" → Load docs-generator plugin
-- "Verify deployment" → Load deploy-verifier plugin
+- "Verify deployment" → Load deploy-verifier plugin (post-deploy only)
 
 ## Status Tracking
 
@@ -285,10 +352,14 @@ Use TodoWrite to track progress:
 [ ] Phase 2: Testing (TDD)
 [ ] Phase 3: Implementation
 [ ] Phase 4: Build Verification
-[ ] Phase 5: Security Audit
-[ ] Phase 6: Documentation
+[ ] Phase 5: Documentation + CHANGELOG
+[ ] Create PR
+────── PR-Level (Automatic) ──────
+[ ] Code Review (CI)
+[ ] Security Audit (CI)
+[ ] PR Approved & Merged
 [ ] Deploy to environment
-[ ] Phase 7: Post-Deployment Verification
+[ ] Post-Deployment Verification
 ```
 
 ## Begin Workflow
@@ -298,4 +369,4 @@ Ask the user:
 2. Is there an existing spec or starting fresh?
 3. Which phase should we begin with?
 
-Then proceed through the SDLC phases, providing guidance and spawning appropriate subagents as needed.
+Then proceed through the development phases (1-5), create a PR, and let CI handle reviews and security.

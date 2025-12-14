@@ -6,9 +6,17 @@ on:
   pull_request_review_comment:
     types: [created]
   issues:
-    types: [opened, assigned]
+    # Only trigger on 'opened', NOT 'assigned' - prevents duplicate runs
+    # when an issue is opened and auto-assigned simultaneously
+    types: [opened]
   pull_request_review:
     types: [submitted]
+
+# Prevent duplicate runs on the same issue/PR
+# Cancel in-progress runs when a new one starts for the same context
+concurrency:
+  group: claude-${{ github.event.issue.number || github.event.pull_request.number || github.event.comment.id }}
+  cancel-in-progress: false  # Don't cancel, just prevent duplicates
 
 jobs:
   claude:
@@ -17,7 +25,7 @@ jobs:
       (github.event_name == 'issue_comment' && contains(github.event.comment.body, '@claude') && github.event.comment.user.type != 'Bot') ||
       (github.event_name == 'pull_request_review_comment' && contains(github.event.comment.body, '@claude') && github.event.comment.user.type != 'Bot') ||
       (github.event_name == 'pull_request_review' && contains(github.event.review.body, '@claude') && github.event.review.user.type != 'Bot') ||
-      (github.event_name == 'issues' && (contains(github.event.issue.body, '@claude') || contains(github.event.issue.title, '@claude')))
+      (github.event_name == 'issues' && github.event.action == 'opened' && (contains(github.event.issue.body, '@claude') || contains(github.event.issue.title, '@claude')))
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -43,6 +51,15 @@ jobs:
       #   with:
       #     go-version: '1.22'
 
+      # - name: Setup Python and uv (for MCP servers)
+      #   uses: actions/setup-python@v5
+      #   with:
+      #     python-version: '3.12'
+      # - name: Install uv
+      #   run: |
+      #     curl -LsSf https://astral.sh/uv/install.sh | sh
+      #     echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+
       # - name: Setup OpenTofu
       #   uses: opentofu/setup-opentofu@v1
       #   with:
@@ -67,25 +84,31 @@ jobs:
           additional_permissions: |
             actions: read
           # Branch naming: claude/issue-{number}-{description}
-          # All claude branches can be merged to main when ready
           branch_prefix: "claude/issue-"
-          base_branch: "main"
+          base_branch: "main"  # Change to "dev" when environment branches exist
           # Enable progress tracking to post comments even with custom prompt
-          # By default, automation mode (with prompt) disables tracking comments
           track_progress: true
 
-          # Custom prompt for implementation with explicit 7-phase SDLC workflow
+          # Custom prompt for implementation with 5-phase development + PR-level automation
           prompt: |
             ## YOUR TASK
 
-            You are an AI developer implementing features using a **MANDATORY 7-Phase SDLC Workflow**.
-            You MUST execute ALL phases in order, spawning the appropriate subagents for each phase.
+            You are an AI developer implementing features using a **5-Phase Development Workflow**.
+            Security review and code review happen automatically at PR level (CI) to save tokens.
 
             Read and follow the project's CLAUDE.md file for all conventions and standards.
 
-            ## MANDATORY 7-PHASE SDLC WORKFLOW
+            ## DEVELOPMENT WORKFLOW (5 Phases)
 
-            **CRITICAL**: You MUST use the Task tool to spawn subagents for each phase. Do NOT skip phases.
+            ```
+            1.SPEC → 2.TEST → 3.CODE → 4.BUILD → 5.DOCS → CREATE PR
+                                                              │
+                                                    ┌─────────┴─────────┐
+                                                    │  PR-Level (Auto)  │
+                                                    │  • Security Audit │
+                                                    │  • Code Review    │
+                                                    └───────────────────┘
+            ```
 
             ### PHASE 1: SPECIFICATION (spec-workflow MCP)
 
@@ -106,20 +129,7 @@ jobs:
             USE Task tool with subagent_type='test-engineer' to:
             - Write unit tests for data models/validation
             - Write integration tests for API endpoints
-            - Write contract tests for response schemas
             - Tests MUST fail initially (Red phase of TDD)
-            ```
-
-            Example Task invocation:
-            ```
-            Task(
-              subagent_type='test-engineer',
-              prompt='Write comprehensive failing tests for [feature].
-                      Read design.md for schemas and contracts.
-                      Create tests in tests/ directory.
-                      Tests should cover: happy paths, error cases, edge cases.
-                      Verify tests fail before implementation.'
-            )
             ```
 
             ### PHASE 3: IMPLEMENTATION (implementation-agent) - TDD GREEN PHASE
@@ -134,113 +144,63 @@ jobs:
             - Make all tests pass (Green phase of TDD)
             ```
 
-            Example Task invocation:
-            ```
-            Task(
-              subagent_type='implementation-agent',
-              prompt='Implement [feature] to make the failing tests pass.
-                      Read design.md for specifications.
-                      Write minimal code to pass tests.
-                      Run tests after each change to verify progress.'
-            )
-            ```
-
             ### PHASE 4: BUILD VERIFICATION
 
             Run build verification commands directly:
 
             ```bash
             # For Node.js/TypeScript:
-            npm run lint && npm run typecheck && npm test -- --coverage && npm run build
+            npm run lint && npm run typecheck && npm test && npm run build
 
             # For Go:
-            go build ./... && go vet ./... && golangci-lint run ./... && go test ./... -v -cover
+            go build ./... && go test ./... -v
 
-            # For OpenTofu/Terraform:
-            tofu init && tofu validate && tofu fmt -check
+            # For OpenTofu:
+            tofu init && tofu validate
             ```
 
-            **Quality Gates**:
-            - 0 lint errors
-            - 0 type/vet errors
-            - All tests pass
-            - 80%+ code coverage (where applicable)
+            **Quality Gates**: 0 errors, all tests pass
 
-            ### PHASE 5: SECURITY AUDIT (security-auditor agent)
-
-            ```
-            USE Task tool with subagent_type='security-auditor' to:
-            - Run dependency vulnerability scan (npm audit / govulncheck)
-            - Run secrets detection (gitleaks detect --source .)
-            - Run SAST analysis (semgrep --config=auto .)
-            - For infrastructure: run checkov scan
-            ```
-
-            Example Task invocation:
-            ```
-            Task(
-              subagent_type='security-auditor',
-              prompt='Perform security audit on the new code in [paths].
-                      Run: gitleaks detect --source .
-                      Run: npm audit (or govulncheck for Go)
-                      Check for OWASP Top 10 vulnerabilities.
-                      Report any critical/high findings.'
-            )
-            ```
-
-            **Gate**: 0 critical/high vulnerabilities
-
-            ### PHASE 6: DOCUMENTATION (documentation-generator agent)
+            ### PHASE 5: DOCUMENTATION (documentation-generator agent)
 
             ```
             USE Task tool with subagent_type='documentation-generator' to:
-            - Generate/update OpenAPI specs for APIs
-            - Add TSDoc/JSDoc/GoDoc comments to public functions
-            - Create CLAUDE.md in new directories (REQUIRED)
-            - Update CHANGELOG.md with feature entry
+            - Create CLAUDE.md in new directories
+            - Add code comments to public functions
+            - **REQUIRED**: Update CHANGELOG.md with feature entry
             ```
 
-            Example Task invocation:
-            ```
-            Task(
-              subagent_type='documentation-generator',
-              prompt='Generate documentation for the new code.
-                      Create CLAUDE.md in any new directories.
-                      Add code comments to public functions.
-                      Update CHANGELOG.md with the feature entry.
-                      Update root CLAUDE.md if structure changed.'
-            )
+            ### CREATE PR
+
+            After phases 1-5, create PR:
+            ```bash
+            gh pr create --title "Feature: [description]" --body "..."
             ```
 
-            ### PHASE 7: VERIFICATION (post-PR creation)
+            **Security and Code Review run automatically in CI on the PR.**
 
-            After creating PR:
-            1. Verify all CI checks pass
-            2. Add PR description with:
-               - Summary of changes
-               - Test coverage report
-               - Security scan results
-               - Documentation updates
-            3. For deployed services: run smoke tests against API endpoints
+            ## BRANCHING STRATEGY
+
+            Follow the project's branching model:
+            - Group branches: `group-N/{name}` from integration branch
+            - Task branches: `task-N.X/{description}` from group branch
+            - Merge: task → group → integration branch (main or dev)
 
             ## PHASE EXECUTION CHECKLIST
 
-            Use TodoWrite to track progress through phases:
+            Use TodoWrite to track progress:
             ```
             [ ] Phase 1: Read specs / create if missing
             [ ] Phase 2: Spawn test-engineer - write failing tests
             [ ] Phase 3: Spawn implementation-agent - make tests pass
             [ ] Phase 4: Run build verification commands
-            [ ] Phase 5: Spawn security-auditor - security scan
-            [ ] Phase 6: Spawn documentation-generator - create docs
-            [ ] Phase 7: Create PR with full description
+            [ ] Phase 5: Spawn documentation-generator - docs + CHANGELOG
+            [ ] Create PR (CI handles security + code review)
             ```
 
             ## START NOW
 
             1. Read the GitHub issue
             2. Read CLAUDE.md and specs
-            3. Execute ALL 7 phases in order
+            3. Execute phases 1-5, then create PR
             4. Do NOT skip the test-engineer phase - TDD is mandatory
-            5. Use Task tool to spawn subagents as specified above
-

@@ -54,12 +54,29 @@
 
 ## Development Workflow
 
-### SDLC Workflow (7-Phase)
+### SDLC Workflow (5-Phase Development + PR-Level + Post-Deploy)
 
 This project follows a structured Software Development Lifecycle using Claude Code automation:
 
 ```
-/sdlc → SPEC → TEST → CODE → BUILD → SECURITY → DOCS → Deploy → VERIFY
+Development Phases:
+/sdlc → 1.SPEC → 2.TEST → 3.CODE → 4.BUILD → 5.DOCS → CREATE PR
+                                                            │
+                                              ┌─────────────┴─────────────┐
+                                              │  PR-Level (Automated CI)  │
+                                              │  • Security Scan          │
+                                              │  • Code Review            │
+                                              └─────────────┬─────────────┘
+                                                            │
+                                                         Merge
+                                                            │
+                                                         Deploy
+                                                            │
+                                              ┌─────────────┴─────────────┐
+                                              │  Post-Deploy Verification │
+                                              │  • API Smoke Tests        │
+                                              │  • Rollback on Failure    │
+                                              └───────────────────────────┘
 ```
 
 | Phase | Plugin | Description | Artifacts |
@@ -68,9 +85,96 @@ This project follows a structured Software Development Lifecycle using Claude Co
 | 2. **Test** | `test-writer` | TDD - Write failing tests before implementation | Test files, fixtures |
 | 3. **Code** | `code-implementer` | Implement minimal code to make tests pass | Source files |
 | 4. **Build** | `builder` | Lint, type check, test coverage, build artifacts | Build output |
-| 5. **Security** | `security-checker` | Dependency scan, secrets detection, SAST | Security report |
-| 6. **Docs** | `docs-generator` | API docs, code docs, CLAUDE.md, CHANGELOG | Documentation |
-| 7. **Verify** | `deploy-verifier` | Post-deployment API tests, smoke tests, rollback on failure | Verification report |
+| 5. **Docs** | `docs-generator` | API docs, code docs, CLAUDE.md, CHANGELOG | Documentation |
+| **PR-Level** | `security-checker` | Dependency scan, secrets detection, SAST (runs in CI) | Security report |
+| **Post-Deploy** | `deploy-verifier` | API smoke tests, rollback on failure | Verification report |
+
+**Why 5 Development Phases?**
+- Security scans and code reviews run **automatically in CI** when a PR is created
+- This saves context/tokens during interactive development sessions
+- Developers focus on SPEC → TEST → CODE → BUILD → DOCS cycle
+- Security and quality gates are enforced at PR merge time
+
+### Branching Strategy
+
+#### Branch Hierarchy
+
+**Current (Pre-Production):**
+```
+main (protected, current integration branch)
+  │
+  └── group-N/{group-name}                    ← Group branch (created when starting a group)
+        │
+        ├── task-N.1/{description}            ← Task branch (one per task)
+        │     └── [merge to group when done]
+        │
+        ├── task-N.2/{description}
+        │     └── [merge to group when done]
+        │
+        └── task-N.3/{description}
+              └── [merge to group when done]
+
+        └── [PR to main when all tasks complete]
+```
+
+**Production Setup (Future):**
+```
+prod (protected, production releases)
+  │
+  └── staging (protected, pre-production validation)
+        │
+        └── dev (integration branch for active development)
+              │
+              └── group-N/{group-name}        ← Feature/group branches off dev
+                    │
+                    ├── task-N.1/{description}
+                    ├── task-N.2/{description}
+                    └── task-N.3/{description}
+                          └── [PR to dev when complete]
+```
+
+#### Workflow by Context
+
+| Context | GitHub Issues? | Branching | Description |
+|---------|----------------|-----------|-------------|
+| **GitHub @claude** | ✅ Yes | Group + Task branches | Each task has an issue, tag @claude for implementation |
+| **Local Claude Code** | ❌ No | Group + Task branches | Same branching, no issues needed |
+| **Manual development** | Optional | Group + Task branches | Developer choice on issue tracking |
+
+#### Starting a New Group
+
+**Both GitHub @claude and local Claude Code sessions follow this branching model:**
+
+```bash
+# 1. Start group branch from integration branch (main now, dev later)
+git checkout main           # or 'dev' when environment branches exist
+git pull origin main
+git checkout -b group-N/{group-name}
+
+# 2. For each task, create task branch from group
+git checkout -b task-N.X/{description}
+
+# 3. Implement task (SDLC phases: test → code → build → docs)
+
+# 4. Merge task to group branch
+git checkout group-N/{group-name}
+git merge task-N.X/{description}
+git branch -d task-N.X/{description}  # Delete task branch
+
+# 5. Repeat for remaining tasks
+
+# 6. When all tasks complete, PR to integration branch
+gh pr create --base main --head group-N/{group-name}  # or --base dev
+```
+
+#### Branch Naming Conventions
+
+| Branch Type | Pattern | Example |
+|-------------|---------|---------|
+| Group | `group-N/{name}` | `group-5/ci-cd-infrastructure` |
+| Task | `task-N.X/{description}` | `task-5.1/buildkite-pipelines` |
+| Hotfix | `hotfix/{description}` | `hotfix/lambda-timeout` |
+| Environment | `dev`, `staging`, `prod` | (future) |
 
 ### Starting a New Feature
 
@@ -271,12 +375,22 @@ Follow [Keep a Changelog](https://keepachangelog.com/) format:
 
 ### Quality Gates
 
+**Development Phases (Interactive):**
 | Phase | Gate Criteria |
 |-------|---------------|
-| Spec | Design approved |
-| Test | Tests written and failing (Red) |
-| Code | All tests passing (Green) |
-| Build | Lint ✓, Types ✓, Coverage 80%+ |
+| 1. Spec | Design approved |
+| 2. Test | Tests written and failing (Red) |
+| 3. Code | All tests passing (Green) |
+| 4. Build | Lint ✓, Types ✓, Coverage 80%+ |
+| 5. Docs | OpenAPI valid, CLAUDE.md updated, CHANGELOG entry |
+
+**PR-Level (Automated CI):**
+| Check | Gate Criteria |
+|-------|---------------|
 | Security | 0 critical/high vulnerabilities |
-| Docs | OpenAPI valid, CLAUDE.md updated |
+| Code Review | Automated review passed |
+
+**Post-Deploy:**
+| Check | Gate Criteria |
+|-------|---------------|
 | Verify | API smoke tests pass, rollback on failure |
