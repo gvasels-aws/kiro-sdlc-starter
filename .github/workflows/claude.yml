@@ -65,6 +65,10 @@ jobs:
           claude_args: "--max-turns 50"
           additional_permissions: |
             actions: read
+          # Branch naming: claude/issue-{number}-{description}
+          # All claude branches can be merged to main when ready
+          branch_prefix: "claude/issue-"
+          base_branch: "main"
           # Enable progress tracking to post comments even with custom prompt
           # By default, automation mode (with prompt) disables tracking comments
           track_progress: true
