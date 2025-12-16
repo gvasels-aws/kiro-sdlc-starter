@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "spec-workflow": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@kimtaeyoon83/spec-workflow-mcp-server"
+      ],
+      "env": {
+        "PROJECT_PATH": "${workspaceFolder}"
+      }
+    }
+  }
+}

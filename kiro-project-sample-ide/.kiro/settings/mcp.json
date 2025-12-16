@@ -1,0 +1,37 @@
+{
+  "mcpServers": {
+    "docs-mcp-server": {
+      "command": "npx",
+      "args": ["@arabold/docs-mcp-server@latest"],
+      "env": {},
+      "disabled": false,
+      "autoApprove": [],
+      "disabledTools": []
+    },
+    "context7": {
+      "command": "npx",
+      "args": ["-y", "@upstash/context7-mcp"],
+      "env": {
+        "CONTEXT7_API_KEY": "${CONTEXT7_API_KEY}"
+      },
+      "disabled": false,
+      "autoApprove": [
+        "resolve-library-id",
+        "get-library-docs"
+      ],
+      "disabledTools": []
+    },
+    "spec-workflow": {
+      "command": "npx",
+      "args": ["-y", "@pimzino/spec-workflow-mcp@latest"],
+      "env": {},
+      "disabled": false,
+      "autoApprove": [
+        "spec-workflow-guide",
+        "steering-guide",
+        "spec-status"
+      ],
+      "disabledTools": []
+    }
+  }
+}
