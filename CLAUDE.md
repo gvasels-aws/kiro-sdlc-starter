@@ -176,6 +176,26 @@ gh pr create --base main --head group-N/{group-name}  # or --base dev
 | Hotfix | `hotfix/{description}` | `hotfix/lambda-timeout` |
 | Environment | `dev`, `staging`, `prod` | (future) |
 
+### Wave-Based Execution (for @claude Automation)
+
+When using GitHub Issues with `@claude` for parallel execution:
+
+| Wave | Purpose | Typical Content |
+|------|---------|-----------------|
+| 0 | Foundation (local) | Contracts, types, interfaces, test fixtures |
+| 1 | Independent infra | Databases, storage, base IAM |
+| 2 | Dependent infra | API Gateway, Lambda (needs Wave 1) |
+| 3 | Core implementation | Business logic, handlers, services |
+| 4 | Integration | Cross-service features, integration tests |
+| 5 | Polish | Documentation, final tests, cleanup |
+
+**Key Rules:**
+- Tasks within a wave run in parallel (no dependencies between them)
+- Waves run sequentially (Wave 2 waits for Wave 1)
+- Integrate after each wave completes
+
+**See:** `.claude/docs/wave-assignment.md` and `.claude/docs/wave-planning.md` for details.
+
 ### Starting a New Feature
 
 1. **Run `/sdlc`** to start the full workflow, or
@@ -281,6 +301,22 @@ EOF
 | **Agents** | `.claude/agents/` | Explicit or auto-delegated | Specialized subagents |
 | **Commands** | `.claude/commands/` | User-invoked (`/command`) | Slash commands |
 | **MCP Servers** | `.mcp.json` | Tool-based | External tools/services |
+| **Docs** | `.claude/docs/` | Reference | Workflow guides & lessons learned |
+
+### Available Documentation
+
+| Document | Purpose |
+|----------|---------|
+| `wave-assignment.md` | Decision tree for assigning tasks to waves |
+| `wave-planning.md` | Guide for planning parallel @claude execution |
+| `integration-cadence.md` | When and how to integrate completed waves |
+| `integration-checklist.md` | Step-by-step wave integration checklist |
+| `task-granularity.md` | Rules for splitting work into tasks |
+| `tdd-workflow.md` | TDD practices and examples |
+| `epic-template.md` | Template for planning wave-based epics |
+| `tool-selection-guide.md` | When to use MCP servers, agents, skills, commands |
+| `lessons-learned-template.md` | Template for capturing troubleshooting patterns |
+| `common-patterns.md` | Cross-technology troubleshooting solutions |
 
 ### Available Skills
 
