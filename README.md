@@ -148,11 +148,15 @@ Or start with individual phases:
 │   │   │       └── review-checklist.md
 │   │   └── documentation-generator.md
 │   │
-│   └── commands/                # Slash commands
-│       ├── sdlc.md              # /sdlc - Full workflow
-│       ├── update-claudemd.md   # /update-claudemd
-│       ├── code-review.md       # /code-review
-│       └── test-file.md         # /test-file
+│   ├── commands/                # Slash commands
+│   │   ├── sdlc.md              # /sdlc - Full workflow
+│   │   ├── update-claudemd.md   # /update-claudemd
+│   │   ├── code-review.md       # /code-review
+│   │   └── test-file.md         # /test-file
+│   │
+│   └── docs/                    # Lessons learned & patterns
+│       ├── lessons-learned-template.md  # Template for adding lessons
+│       └── common-patterns.md   # Cross-technology patterns
 │
 ├── src/                         # Your source code (create as needed)
 ├── tests/                       # Your tests (create as needed)
@@ -352,6 +356,17 @@ Follow [Keep a Changelog](https://keepachangelog.com/):
 ### Fixed
 - Bug fixes
 ```
+
+### Lessons Learned
+
+Capture troubleshooting patterns in `.claude/docs/`:
+
+- **Add technology-specific files**: `go-lessons.md`, `aws-lessons.md`, `typescript-lessons.md`
+- **Use the template**: See `lessons-learned-template.md` for the entry format
+- **Include actual error messages**: Helps Claude find relevant solutions
+- **Add debugging steps**: Help others investigate similar issues
+
+These files are read by Claude Code when troubleshooting, providing project-specific knowledge beyond general documentation.
 
 ## License
 
