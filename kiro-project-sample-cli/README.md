@@ -13,6 +13,20 @@ This template provides:
 - **CLI-first development** approach (headless and interactive modes)
 - **Empty source/test structure** ready for your implementation
 
+### Project Structure Philosophy
+
+This project separates **official Kiro CLI features** from **custom SDLC framework documentation**:
+
+```
+.kiro/                    ← Official Kiro CLI (steering, specs, MCP settings)
+docs/sdlc-framework/      ← Custom framework (agents, plugins, workflows, skills)
+scripts/                  ← Build automation (shell scripts)
+```
+
+**Important**: Only `.kiro/steering/`, `.kiro/specs/`, and `.kiro/settings/` are processed by Kiro CLI. The `docs/sdlc-framework/` directory contains reference documentation for implementing structured SDLC workflows, but these are **not** official Kiro CLI features.
+
+See `docs/sdlc-framework/README.md` for details on the custom framework.
+
 ## Quick Start
 
 ### Prerequisites
@@ -285,33 +299,46 @@ Requirements:
 
 ```
 kiro-project-sample-cli/
-├── .kiro/
-│   ├── steering/          # AI context (product, tech, structure)
-│   ├── specs/             # Feature specifications (spec-workflow)
-│   ├── settings/
-│   │   └── mcp.json       # MCP server configuration
-│   └── cli-config.json    # CLI settings with script references
+├── .kiro/                         # ✅ OFFICIAL KIRO CLI
+│   ├── steering/                  # AI context documents
+│   │   ├── product.md             # Product vision
+│   │   ├── tech.md                # Technology stack
+│   │   ├── structure.md           # Directory conventions
+│   │   ├── sdlc-workflow.md       # SDLC process
+│   │   └── phases/                # Phase-specific guidance
+│   ├── specs/                     # Feature specifications (spec-workflow MCP)
+│   └── settings/
+│       └── mcp.json               # MCP server configuration
 │
-├── scripts/               # Build automation (shell scripts)
-│   ├── lint.sh            # Ruff linting
-│   ├── type-check.sh      # MyPy type checking
-│   ├── test.sh            # Pytest with coverage
-│   ├── security-scan.sh   # Bandit security scan
-│   ├── build.sh           # Full build pipeline
-│   └── quality-gate.sh    # Security + dependency check
+├── docs/                          # 📚 CUSTOM FRAMEWORK DOCS
+│   └── sdlc-framework/            # SDLC implementation patterns
+│       ├── README.md              # Framework overview
+│       ├── agents/                # AI persona patterns
+│       ├── plugins/               # SDLC phase implementations
+│       ├── skills/                # Advanced capabilities with scripts
+│       ├── workflows/             # Command sequences
+│       └── hooks/                 # Hook examples (reference only)
 │
-├── src/                   # Source code (EMPTY - ready for your code)
-│   ├── api/               # API layer (__init__.py only)
-│   ├── models/            # Data models (__init__.py only)
-│   └── services/          # Business logic (__init__.py only)
+├── scripts/                       # Build automation (shell scripts)
+│   ├── lint.sh                    # Ruff linting
+│   ├── type-check.sh              # MyPy type checking
+│   ├── test.sh                    # Pytest with coverage
+│   ├── security-scan.sh           # Bandit security scan
+│   ├── build.sh                   # Full build pipeline
+│   └── quality-gate.sh            # Security + dependency check
 │
-├── tests/                 # Test files (EMPTY - ready for your tests)
-│   ├── unit/              # Unit tests (__init__.py only)
-│   ├── integration/       # Integration tests (__init__.py only)
-│   └── fixtures/          # Test fixtures (__init__.py only)
+├── src/                           # Source code (EMPTY - ready for your code)
+│   ├── api/                       # API layer (__init__.py only)
+│   ├── models/                    # Data models (__init__.py only)
+│   └── services/                  # Business logic (__init__.py only)
 │
-├── pyproject.toml         # Python project configuration
-└── README.md              # This file
+├── tests/                         # Test files (EMPTY - ready for your tests)
+│   ├── unit/                      # Unit tests (__init__.py only)
+│   ├── integration/               # Integration tests (__init__.py only)
+│   └── fixtures/                  # Test fixtures (__init__.py only)
+│
+├── pyproject.toml                 # Python project configuration
+└── README.md                      # This file
 ```
 
 **Note**: This is a template with empty directories. For a complete working example with actual implementation, see [kiro-project-sample-ide](../kiro-project-sample-ide).
@@ -336,23 +363,17 @@ The spec-workflow MCP server is configured in `.kiro/settings/mcp.json`:
 }
 ```
 
-### CLI Configuration
+### Quality Thresholds
 
-Phase definitions and script mappings in `.kiro/cli-config.json`:
+Configure quality thresholds via environment variables:
 
-```json
-{
-  "sdlc": {
-    "coverageThreshold": 80,
-    "lintErrors": 0,
-    "securityLevel": "high"
-  },
-  "scripts": {
-    "build": "./scripts/build.sh",
-    "qualityGate": "./scripts/quality-gate.sh"
-  }
-}
+```bash
+# In .envrc or shell
+export COVERAGE_THRESHOLD=80
+export LINT_MAX_ERRORS=0
 ```
+
+Scripts automatically enforce these thresholds during `build.sh` and `quality-gate.sh` execution.
 
 ## CI/CD Integration
 
@@ -498,10 +519,19 @@ npx -y @kimtaeyoon83/spec-workflow-mcp-server --version
 
 ## Resources
 
-- [TDD Workflow Guide](.kiro/steering/tdd-workflow.md)
+### Official Kiro CLI Documentation
+- [SDLC Workflow Guide](.kiro/steering/sdlc-workflow.md)
 - [Product Vision](.kiro/steering/product.md)
 - [Technology Stack](.kiro/steering/tech.md)
 - [Project Structure](.kiro/steering/structure.md)
+- [Phase-Specific Guidance](.kiro/steering/phases/)
+
+### Custom Framework Documentation
+- [SDLC Framework Overview](docs/sdlc-framework/README.md)
+- [Agent Patterns](docs/sdlc-framework/agents/)
+- [Plugin Implementations](docs/sdlc-framework/plugins/)
+- [Workflow Sequences](docs/sdlc-framework/workflows/)
+- [Skills with Scripts](docs/sdlc-framework/skills/)
 
 ## License
 

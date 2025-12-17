@@ -10,9 +10,23 @@ This reference implementation includes:
 
 - **6-Phase SDLC Workflow**: SPEC → TEST → CODE → BUILD → QUALITY GATE → DOCS
 - **Steering Documents**: Persistent AI context for consistent behavior
-- **Hook Configuration**: Automated quality gates (lint, security)
-- **MCP Integration**: spec-workflow server for specification management
+- **Hook Configuration**: Automated quality gates (lint, security) via IDE UI
+- **MCP Integration**: 3 MCP servers (spec-workflow, docs-mcp-server, context7)
 - **TDD Sample**: User management API with 100% test coverage
+
+### Project Structure Philosophy
+
+This project separates **official Kiro IDE features** from **custom SDLC framework documentation**:
+
+```
+.kiro/                    ← Official Kiro IDE (steering, specs, MCP settings)
+docs/sdlc-framework/      ← Custom framework (agents, plugins, workflows, skills)
+Makefile                  ← Build automation
+```
+
+**Important**: Only `.kiro/steering/`, `.kiro/specs/`, and `.kiro/settings/` are processed by Kiro IDE. Hooks are configured via the **Agent Hooks panel** in the IDE UI, not files. The `docs/sdlc-framework/` directory contains reference documentation for implementing structured SDLC workflows, but these are **not** official Kiro IDE features.
+
+See `docs/sdlc-framework/README.md` for details on the custom framework.
 
 ## Repository Setup
 
@@ -121,36 +135,44 @@ See `docs/GETTING_STARTED.md` for detailed configuration.
 
 ```
 kiro-project-sample-ide/
-├── .kiro/                           # Kiro configuration
+├── .kiro/                           # ✅ OFFICIAL KIRO IDE
 │   ├── steering/                    # AI context documents
-│   │   ├── product.md               # SDLC workflow definition
+│   │   ├── product.md               # Product vision
 │   │   ├── tech.md                  # Technology stack
 │   │   ├── structure.md             # Directory conventions
-│   │   ├── tdd-workflow.md          # TDD best practices
+│   │   ├── sdlc-workflow.md         # SDLC process
 │   │   └── phases/                  # Phase-specific instructions
-│   ├── specs/                       # Feature specifications
+│   ├── specs/                       # Feature specifications (spec-workflow MCP)
 │   │   ├── kiro-ide-sdlc/           # Spec 1: IDE workflow
 │   │   └── kiro-cli-sdlc/           # Spec 2: CLI workflow
-│   ├── settings/
-│   │   └── mcp.json                 # MCP server configuration
-│   ├── hooks/
-│   │   └── README.md                # Hook documentation
-│   └── cli-config.json              # CLI configuration
-├── src/                             # Source code
-│   ├── api/                         # API endpoints
-│   ├── models/                      # Data models
-│   └── services/                    # Business logic
-├── tests/                           # Test files
-│   ├── unit/                        # Unit tests
-│   ├── integration/                 # Integration tests
-│   └── fixtures/                    # Test fixtures
-├── docs/                            # Documentation
+│   └── settings/
+│       └── mcp.json                 # MCP server configuration (3 servers)
+│
+├── docs/                            # 📚 DOCUMENTATION
+│   ├── sdlc-framework/              # Custom SDLC framework
+│   │   ├── README.md                # Framework overview
+│   │   ├── agents/                  # AI persona patterns
+│   │   ├── plugins/                 # SDLC phase implementations
+│   │   ├── skills/                  # Advanced capabilities with scripts
+│   │   ├── workflows/               # Command sequences
+│   │   └── hooks/                   # Hook examples (UI-managed in IDE)
 │   ├── api.md                       # API documentation
 │   ├── GETTING_STARTED.md           # Setup guide
 │   └── KIRO_CLI_SETUP.md            # CLI setup guide
-├── .envrc                           # direnv configuration
+│
+├── src/                             # Source code (working Python API)
+│   ├── api/                         # API endpoints
+│   ├── models/                      # Data models
+│   └── services/                    # Business logic
+│
+├── tests/                           # Test files (100% coverage)
+│   ├── unit/                        # Unit tests
+│   ├── integration/                 # Integration tests
+│   └── fixtures/                    # Test fixtures
+│
+├── .envrc.example                   # Example environment file
 ├── .gitignore                       # Git ignore patterns
-├── Makefile                         # Build commands
+├── Makefile                         # Build automation
 ├── pyproject.toml                   # Python project config
 ├── CHANGELOG.md                     # Change log
 └── README.md                        # This file
@@ -195,7 +217,7 @@ Open the `kiro-sdlc-sample/` folder in Kiro IDE.
 
 ### 2. Configure Hooks
 
-Set up these hooks in Kiro Panel → Agent Hooks:
+Set up these hooks in Kiro IDE → **Agent Hooks Panel** (UI-managed):
 
 | Hook | Trigger | Pattern | Purpose |
 |------|---------|---------|---------|
@@ -204,7 +226,7 @@ Set up these hooks in Kiro Panel → Agent Hooks:
 | TDD Reminder | File Create | `src/**/*.py` | Remind tests first |
 | Code Review | Manual | - | Review checklist |
 
-See `.kiro/hooks/README.md` for detailed setup instructions.
+**Important**: Hooks are configured through the IDE UI, not files. See `docs/sdlc-framework/hooks/README.md` for hook examples and patterns (reference only).
 
 ### 3. Use Steering Documents
 
@@ -212,7 +234,7 @@ Reference in chat:
 
 ```
 #steering:phases/01-spec Create a spec for user authentication
-#steering:tdd-workflow Help me write tests
+#steering:sdlc-workflow Help me write tests following TDD
 ```
 
 ## Kiro CLI Setup
@@ -335,10 +357,25 @@ make all
 
 ## Documentation
 
-- `docs/GETTING_STARTED.md` - Complete setup guide
-- `docs/KIRO_CLI_SETUP.md` - CLI-specific setup
-- `docs/api.md` - API documentation
-- `.kiro/hooks/README.md` - Hook configuration
+### Official Kiro IDE Documentation
+- [SDLC Workflow Guide](.kiro/steering/sdlc-workflow.md)
+- [Product Vision](.kiro/steering/product.md)
+- [Technology Stack](.kiro/steering/tech.md)
+- [Project Structure](.kiro/steering/structure.md)
+- [Phase-Specific Guidance](.kiro/steering/phases/)
+
+### Custom Framework Documentation
+- [SDLC Framework Overview](docs/sdlc-framework/README.md)
+- [Agent Patterns](docs/sdlc-framework/agents/)
+- [Plugin Implementations](docs/sdlc-framework/plugins/)
+- [Workflow Sequences](docs/sdlc-framework/workflows/)
+- [Skills with Scripts](docs/sdlc-framework/skills/)
+- [Hook Examples (UI-managed)](docs/sdlc-framework/hooks/)
+
+### Setup Guides
+- [Getting Started Guide](docs/GETTING_STARTED.md)
+- [Kiro CLI Setup](docs/KIRO_CLI_SETUP.md)
+- [API Documentation](docs/api.md)
 
 ## License
 
