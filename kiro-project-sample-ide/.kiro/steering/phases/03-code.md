@@ -247,6 +247,27 @@ Before moving to Phase 4 (BUILD):
 - [ ] No test skipped or disabled
 - [ ] Code follows project structure
 - [ ] Basic refactoring complete
+- [ ] **Task review triggered** (if task complete)
+
+## 🔍 Review Checkpoint
+
+**After completing a task in the CODE phase:**
+
+1. Mark task as "completed" in TodoWrite
+2. **Trigger "Task Review (PR Emulation)" manual hook**:
+   - Open Agent Hooks panel
+   - Find "Task Review (PR Emulation)"
+   - Click ▷ (play button) to run
+3. Review the generated report
+4. If APPROVED: merge task branch to group branch
+5. If CHANGES REQUESTED: fix issues and re-review
+
+**Why review after CODE phase?**
+- Catches issues while context is fresh
+- Easier to fix problems immediately
+- Prevents accumulation of technical debt
+
+See: `docs/REVIEW_HOOKS_SETUP.md` for hook configuration
 
 ## Chat Invocation
 

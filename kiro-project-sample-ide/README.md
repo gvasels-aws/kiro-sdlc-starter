@@ -14,6 +14,37 @@ This reference implementation includes:
 - **MCP Integration**: 3 MCP servers (spec-workflow, docs-mcp-server, context7)
 - **TDD Sample**: User management API with 100% test coverage
 
+## 🎉 NEW: SDLC Orchestrator - Parity with Claude Code
+
+This project now includes **full SDLC parity** with Claude Code's `/sdlc` command using Kiro's native features!
+
+### Quick Start with SDLC Orchestrator
+
+```
+#steering:sdlc-orchestrator
+Start SDLC workflow for [your-feature]
+```
+
+The orchestrator will guide you through all 6 phases automatically:
+- **SPEC** → **TEST** → **CODE** → **BUILD** → **QUALITY GATE** → **DOCS**
+
+**Features**:
+✅ Automatic phase transitions with validation
+✅ Agent delegation (test-engineer, security-auditor, etc.)
+✅ Quality gate enforcement
+✅ Progress tracking with TodoWrite
+✅ Automatic hook integration
+
+**Setup**: One-time 10-minute hook configuration (see `docs/HOOKS_SETUP_COMPLETE.md`)
+
+**Documentation**:
+- `docs/PARITY_ACHIEVED.md` - Complete solution guide
+- `docs/HOOKS_SETUP_COMPLETE.md` - Hook configuration
+- `docs/SDLC_WORKFLOW_TEST.md` - Test scenario
+- `.kiro/steering/sdlc-orchestrator.md` - Orchestrator logic
+
+---
+
 ### Project Structure Philosophy
 
 This project separates **official Kiro IDE features** from **custom SDLC framework documentation**:

@@ -2,7 +2,51 @@
 inclusion: always
 ---
 
-# Test-Driven Development (TDD) Workflow
+# SDLC Workflow with Review Checkpoints
+
+## Overview
+
+This project follows a 6-phase SDLC workflow with **mandatory review checkpoints** to emulate PR-level quality gates.
+
+```
+SPEC → TEST → CODE → BUILD → QUALITY GATE → DOCS
+         ↓      ↓              ↓               ↓
+      review  review         review         review
+```
+
+---
+
+## 🔍 Review Checkpoint: When to Trigger
+
+### After Each Task Completion
+
+**Trigger the manual "Task Review" hook when:**
+1. Task is marked as "completed" in TodoWrite
+2. Before merging task branch to group branch
+3. You want to ensure behavior works as expected
+
+**How to trigger:**
+```
+1. Open Agent Hooks panel
+2. Find "Task Review" hook
+3. Click ▷ (play button) to run
+```
+
+### After Spec Completion
+
+**Trigger the manual "Spec Review" hook when:**
+1. All tasks in a spec are completed
+2. Before creating PR to main branch
+3. Final validation before deployment
+
+**How to trigger:**
+```
+1. Open Agent Hooks panel
+2. Find "Spec Review" hook
+3. Click ▷ (play button) to run
+```
+
+---
 
 ## The Three Laws of TDD
 

@@ -194,6 +194,30 @@ Before moving to Phase 6 (DOCS):
 - [ ] `safety` reports 0 vulnerable dependencies
 - [ ] Code review checklist passed
 - [ ] All findings addressed or documented
+- [ ] **Task review triggered** (comprehensive validation)
+
+## 🔍 Review Checkpoint
+
+**After completing the QUALITY GATE phase:**
+
+1. **Trigger "Task Review (PR Emulation)" manual hook**:
+   - Open Agent Hooks panel
+   - Find "Task Review (PR Emulation)"
+   - Click ▷ (play button) to run
+2. Review comprehensive report including:
+   - Quality checks (lint, type check, tests, coverage)
+   - Security scan results
+   - Code quality assessment
+   - Performance review
+3. Address any findings
+4. Only proceed to DOCS phase if APPROVED
+
+**Quality Gate + Task Review = Double validation**
+- Automated checks catch technical issues
+- Manual review catches design/architecture issues
+- Together they ensure production-ready code
+
+See: `docs/REVIEW_HOOKS_SETUP.md` for hook configuration
 
 ## Chat Invocation
 

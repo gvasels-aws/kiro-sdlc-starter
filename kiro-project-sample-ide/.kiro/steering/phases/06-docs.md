@@ -275,6 +275,41 @@ Feature is complete when:
 - [ ] README.md updated
 - [ ] All public functions documented
 - [ ] All previous phases verified
+- [ ] **Spec review triggered** (if all spec tasks complete)
+
+## 🔍 Review Checkpoint
+
+**After completing the DOCS phase:**
+
+### If This is the Last Task in the Spec:
+
+1. **Trigger "Spec Review (Full Validation)" manual hook**:
+   - Open Agent Hooks panel
+   - Find "Spec Review (Full Validation)"
+   - Click ▷ (play button) to run
+2. Review comprehensive spec-level report including:
+   - All spec tasks completion status
+   - Full test suite with coverage
+   - Complete security scan
+   - All changes since spec started
+   - API contract validation
+   - Documentation completeness
+3. Address any findings
+4. If READY FOR PR: Create PR to main branch
+5. If NEEDS WORK: Address issues and re-review
+
+### If More Tasks Remain:
+
+1. **Trigger "Task Review (PR Emulation)" manual hook**
+2. If APPROVED: merge task branch to group branch
+3. Continue with remaining tasks
+
+**Spec Review = Final Gate Before Production**
+- Validates entire feature is production-ready
+- Ensures all quality gates passed across all tasks
+- Final check before deployment
+
+See: `docs/REVIEW_HOOKS_SETUP.md` for hook configuration
 
 ## Chat Invocation
 
