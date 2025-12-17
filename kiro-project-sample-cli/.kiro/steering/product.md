@@ -2,11 +2,13 @@
 inclusion: always
 ---
 
-# Product: Kiro CLI SDLC Sample Project
+# Product: Kiro CLI Template
 
 ## Overview
 
-This project demonstrates a complete Software Development Lifecycle (SDLC) workflow implemented using Claude Code CLI with the spec-workflow MCP server. It serves as both a reference implementation and a template for TDD-based Python development in headless/interactive CLI environments.
+This is a **minimal starter template** for CLI-first development using Claude Code CLI with the spec-workflow MCP server. It provides the structure and automation scripts for TDD-based Python development in headless/interactive CLI environments.
+
+**Note**: This is a template/skeleton with empty source directories. For a complete working reference implementation, see the kiro-project-sample-ide sibling project.
 
 ## SDLC Workflow
 
@@ -116,7 +118,17 @@ claude --prompt "Generate API documentation for src/api/"
 
 ## Target Users
 
-- Developers using Claude Code CLI for TDD
-- Teams adopting spec-workflow for structured SDLC
-- CI/CD pipelines requiring headless quality checks
-- Developers migrating from IDE workflows to CLI automation
+- Developers starting new CLI-first projects
+- Teams wanting a minimal template for TDD workflows
+- CI/CD pipelines requiring headless quality checks via shell scripts
+- Developers who prefer script-based automation over IDE hooks
+
+## Difference from kiro-project-sample-ide
+
+| Aspect | kiro-cli-template (this) | kiro-project-sample-ide |
+|--------|--------------------------|-------------------------|
+| Purpose | Minimal template/starter | Complete reference implementation |
+| Source code | Empty stubs | Full user management API |
+| Tests | Empty stubs | 45+ comprehensive tests |
+| Automation | Shell scripts | Makefile + inline commands |
+| Use case | Start new projects | Learn from working example |

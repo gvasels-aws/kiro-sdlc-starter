@@ -1,14 +1,17 @@
-# Kiro CLI SDLC Sample Project
+# Kiro CLI Template
 
-A reference implementation demonstrating Test-Driven Development (TDD) with structured SDLC workflows using Claude Code CLI and the spec-workflow MCP server.
+A minimal starter template for CLI-first development with Test-Driven Development (TDD) and structured SDLC workflows using Claude Code CLI and the spec-workflow MCP server.
 
 ## Overview
 
-This project showcases:
-- **6-phase SDLC workflow** orchestrated via spec-workflow MCP
-- **Test-Driven Development (TDD)** practices in Python
+This is a **template/skeleton project** - a starting point for new CLI-driven projects. For a complete working example, see [kiro-project-sample-ide](../kiro-project-sample-ide).
+
+This template provides:
+- **6-phase SDLC workflow** structure via spec-workflow MCP
+- **Test-Driven Development (TDD)** setup for Python
 - **Automated quality gates** via shell scripts
-- **CLI-first development** (headless and interactive modes)
+- **CLI-first development** approach (headless and interactive modes)
+- **Empty source/test structure** ready for your implementation
 
 ## Quick Start
 
@@ -287,28 +290,31 @@ kiro-project-sample-cli/
 │   ├── specs/             # Feature specifications (spec-workflow)
 │   ├── settings/
 │   │   └── mcp.json       # MCP server configuration
-│   └── cli-config.json    # CLI settings
+│   └── cli-config.json    # CLI settings with script references
 │
-├── scripts/               # Build automation
-│   ├── lint.sh
-│   ├── type-check.sh
-│   ├── test.sh
-│   ├── security-scan.sh
-│   ├── build.sh
-│   └── quality-gate.sh
+├── scripts/               # Build automation (shell scripts)
+│   ├── lint.sh            # Ruff linting
+│   ├── type-check.sh      # MyPy type checking
+│   ├── test.sh            # Pytest with coverage
+│   ├── security-scan.sh   # Bandit security scan
+│   ├── build.sh           # Full build pipeline
+│   └── quality-gate.sh    # Security + dependency check
 │
-├── src/                   # Source code
-│   ├── api/               # API layer
-│   ├── models/            # Data models
-│   └── services/          # Business logic
+├── src/                   # Source code (EMPTY - ready for your code)
+│   ├── api/               # API layer (__init__.py only)
+│   ├── models/            # Data models (__init__.py only)
+│   └── services/          # Business logic (__init__.py only)
 │
-├── tests/                 # Test files
-│   ├── unit/
-│   ├── integration/
-│   └── fixtures/
+├── tests/                 # Test files (EMPTY - ready for your tests)
+│   ├── unit/              # Unit tests (__init__.py only)
+│   ├── integration/       # Integration tests (__init__.py only)
+│   └── fixtures/          # Test fixtures (__init__.py only)
 │
-└── docs/                  # Documentation
+├── pyproject.toml         # Python project configuration
+└── README.md              # This file
 ```
+
+**Note**: This is a template with empty directories. For a complete working example with actual implementation, see [kiro-project-sample-ide](../kiro-project-sample-ide).
 
 ## Configuration
 
@@ -437,6 +443,8 @@ pytest --lf
 1. **Always write tests first** - No production code without a failing test
 2. **Minimal implementation** - Only write code to make tests pass
 3. **Refactor fearlessly** - Tests protect against regressions
+
+**Note**: This template has empty source/test directories. Start by creating your first test following the TDD cycle.
 
 ### Quality Standards
 

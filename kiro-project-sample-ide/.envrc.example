@@ -1,4 +1,4 @@
-# direnv configuration for Kiro IDE SDLC Sample Project
+# direnv configuration for Kiro SDLC Reference Implementation
 # Install direnv: https://direnv.net/docs/installation.html
 #
 # Setup Instructions:
@@ -28,6 +28,6 @@ export COVERAGE_THRESHOLD=80
 export LINT_MAX_ERRORS=0
 
 # Log information
-echo "Kiro IDE SDLC Sample Project environment activated"
+echo "Kiro SDLC Reference Implementation environment activated"
 echo "Python: $(python --version)"
 echo "Project: ${PWD}"

@@ -1,10 +1,12 @@
-# Kiro SDLC Sample Project
+# Kiro SDLC Reference Implementation
 
-A standalone Python project demonstrating the Kiro SDLC workflow with Test-Driven Development (TDD).
+A complete Python project demonstrating the Kiro SDLC workflow with Test-Driven Development (TDD) and working code examples.
 
 ## Overview
 
-This project serves as a reference implementation for replicating the Claude Code 5-phase SDLC workflow in Kiro IDE and CLI. It includes:
+This project is a **full reference implementation** with working code - use it to learn from a complete example. For a minimal starter template, see [kiro-project-sample-cli](../kiro-project-sample-cli).
+
+This reference implementation includes:
 
 - **6-Phase SDLC Workflow**: SPEC → TEST → CODE → BUILD → QUALITY GATE → DOCS
 - **Steering Documents**: Persistent AI context for consistent behavior
@@ -24,9 +26,8 @@ This project serves as a reference implementation for replicating the Claude Cod
 ### Quick Start
 
 ```bash
-# Clone the repository
-git clone <repository-url> kiro-sdlc-sample
-cd kiro-sdlc-sample
+# Navigate to the sample-ide directory
+cd kiro-project-sample-ide
 
 # Option A: Using direnv (Recommended)
 # 1. Copy the example environment file
@@ -119,7 +120,7 @@ See `docs/GETTING_STARTED.md` for detailed configuration.
 ## Project Structure
 
 ```
-kiro-sdlc-sample/
+kiro-project-sample-ide/
 ├── .kiro/                           # Kiro configuration
 │   ├── steering/                    # AI context documents
 │   │   ├── product.md               # SDLC workflow definition

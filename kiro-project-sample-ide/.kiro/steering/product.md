@@ -2,11 +2,13 @@
 inclusion: always
 ---
 
-# Product: Kiro SDLC Sample Project
+# Product: Kiro SDLC Reference Implementation
 
 ## Overview
 
-This project demonstrates a complete Software Development Lifecycle (SDLC) workflow implemented in Kiro IDE/CLI. It serves as both a reference implementation and a template for TDD-based Python development.
+This is a **complete reference implementation** with working code demonstrating the full Software Development Lifecycle (SDLC) workflow in Kiro IDE/CLI. Use this to learn from a real example of TDD-based Python development.
+
+**Note**: This is a complete implementation with a working user management API and comprehensive tests. For a minimal starter template, see the kiro-project-sample-cli sibling project.
 
 ## SDLC Workflow
 
@@ -71,6 +73,17 @@ Major phases (SPEC, TEST, CODE, DOCS) are driven through Kiro's agentic chat:
 
 ## Target Users
 
-- Developers learning TDD practices
+- Developers learning TDD practices (learn from working example)
 - Teams adopting structured SDLC workflows
-- Projects migrating from Claude Code to Kiro
+- Developers wanting to see a complete implementation before starting
+- Teams evaluating Kiro for their projects
+
+## Difference from kiro-project-sample-cli
+
+| Aspect | kiro-project-sample-ide (this) | kiro-cli-template |
+|--------|--------------------------------|-------------------|
+| Purpose | Complete reference implementation | Minimal template/starter |
+| Source code | Full user management API | Empty stubs |
+| Tests | 45+ comprehensive tests | Empty stubs |
+| Automation | Makefile + inline commands | Shell scripts |
+| Use case | Learn from working example | Start new projects |

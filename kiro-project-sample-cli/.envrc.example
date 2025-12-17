@@ -1,9 +1,9 @@
-# direnv configuration for Kiro CLI SDLC Sample Project
+# direnv configuration for Kiro CLI Template
 # Install direnv: https://direnv.net/docs/installation.html
 #
 # Setup Instructions:
 # 1. Copy this file: cp .envrc.example .envrc
-# 2. Edit .envrc with your actual values
+# 2. Edit .envrc with your actual values (if using MCP servers that need API keys)
 # 3. Run: direnv allow
 
 # Python virtual environment
@@ -15,6 +15,10 @@ export PYTHONPATH="${PWD}/src:${PYTHONPATH}"
 # Kiro CLI configuration
 export KIRO_PROJECT_PATH="${PWD}"
 
+# MCP Server API Keys (Optional - only needed if using specific MCP servers)
+# Uncomment and configure if you're using Context7 or other MCP servers requiring auth
+# export CONTEXT7_API_KEY="your-context7-api-key-here"
+
 # Quality gate thresholds (optional overrides)
 export COVERAGE_THRESHOLD=80
 export LINT_MAX_ERRORS=0
@@ -24,6 +28,6 @@ export PYTHONDONTWRITEBYTECODE=1
 export PYTHONUNBUFFERED=1
 
 # Log information
-echo "Kiro CLI SDLC Sample Project environment activated"
+echo "Kiro CLI Template environment activated"
 echo "Python: $(python --version)"
 echo "Project: ${PWD}"

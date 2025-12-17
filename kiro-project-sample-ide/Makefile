@@ -1,11 +1,11 @@
-# Kiro SDLC Sample Project Makefile
+# Kiro SDLC Reference Implementation Makefile
 # Common commands for development and CI
 
 .PHONY: help install dev-install lint type-check test coverage security build clean all
 
 # Default target
 help:
-	@echo "Kiro SDLC Sample Project"
+	@echo "Kiro SDLC Reference Implementation"
 	@echo ""
 	@echo "Usage: make [target]"
 	@echo ""

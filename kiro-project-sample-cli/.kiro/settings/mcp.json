@@ -2,13 +2,17 @@
   "mcpServers": {
     "spec-workflow": {
       "command": "npx",
-      "args": [
-        "-y",
-        "@kimtaeyoon83/spec-workflow-mcp-server"
-      ],
+      "args": ["-y", "@pimzino/spec-workflow-mcp@latest"],
       "env": {
         "PROJECT_PATH": "${workspaceFolder}"
-      }
+      },
+      "disabled": false,
+      "autoApprove": [
+        "spec-workflow-guide",
+        "steering-guide",
+        "spec-status"
+      ],
+      "disabledTools": []
     }
   }
 }
